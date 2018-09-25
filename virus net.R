@@ -39,3 +39,23 @@ copredict(5291,dnavirus,200,1)
 table(virusmeta$vDNAoRNA,virusmeta$IsZoonotic)
 24087*29/(29+176)
 13353*159/(159+222)
+
+
+
+
+#### prop zoonotic
+virus$zoonotic=0
+for (i in 1:nrow(virus)) {
+virus$zoonotic[i] <- virusmeta[virusmeta$vVirusNameCorrected==virus$vVirusNameCorrected[i],]$IsZoonotic
+}
+
+hostmeta <- read.csv("~/Github/brevity/olival nature 2017/hosts.csv")
+virus$hostgroup = ''
+
+for (i in 1:nrow(virus)) {
+  virus$hostgroup[i] <- as.character(hostmeta[hostmeta$hHostNameFinal==virus$hHostNameFinal[i],]$hOrder)
+}
+
+virus <- virus[,c(1,7,8)]
+virus <- unique(virus)
+df <- table(virus$hostgroup,virus$zoonotic)
