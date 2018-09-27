@@ -1,6 +1,14 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+Created on Tue Sep 25 13:34:13 2018
+
+@author: admin
+"""
+
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
 Created on Mon Sep 24 13:36:31 2018
 
 @author: Casey
@@ -133,13 +141,18 @@ def add_edges_to_host_association_net(wild_dom_or_all, host_order_dict, unique_v
                     edge_weight = all_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
                     updated_edge_weight = edge_weight+1# add 1 to the weight of the edge and save as updated weight
                     all_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight)# redraw the edge with the new weight
+  
+    
     # just want to return the network that I have specified 
     if wild_dom_or_all == 'wild':
-        desired_network = wild_host_association_nneet
+        desired_network = wild_host_association_net
     if wild_dom_or_all == 'dom':
         desired_network = dom_host_association_net
     if wild_dom_or_all == 'all':
         desired_network = all_host_association_net
+    for each_node in nx.nodes(desired_network):
+        if len(desired_network.neighbors(each_node)) == 0:
+            desired_net.remove_node(each_node)
     return desired_network# just return the desired network
             
             
@@ -153,8 +166,37 @@ if __name__ == '__main__':
     host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations = host_and_order_data(olival_hosts, olival_associations, wild_host_association_net, dom_host_association_net, all_host_association_net)
     what_type_of_net = 'all' # specify 'wild', 'dom', or 'all'
     desired_net = add_edges_to_host_association_net(what_type_of_net, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations)
-
     
+    
+    
+#    for each_node in nx.nodes(desired_net):
+#        print str(each_node)+" degree: "+str(desired_net.degree(each_node))
+    
+#    for each_node in nx.nodes(desired_net):  
+#        
+#        node_neighbors = desired_net.neighbors(each_node)
+#        
+#        list_edge_weights = []
+#        for each_neighbor in node_neighbors:
+#            edge_weight = desired_net[each_node][each_neighbor]['weight']
+#            list_edge_weights.append(edge_weight)
+#        
+#        if len(node_neighbors)>0:
+#            print str(each_node)+" average node strength: "+str(sum(list_edge_weights)/len(node_neighbors))
+#       
+        #print desired_net.degree(each_node)
+        #print str(each_node)+" degree: "+str(desired_net.degree(each_node))
+     
+
+#    deg_cent = nx.degree_centrality(desired_net)
+#    print deg_cent
+#    b_cent = nx.betweenness_centrality(desired_net)
+#    print b_cent
+#    e_cent = nx.eigenvector_centrality(desired_net)
+#    print e_cent
+
+
+
 
 
 
