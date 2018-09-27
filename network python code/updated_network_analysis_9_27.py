@@ -1,6 +1,14 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+Created on Thu Sep 27 14:20:18 2018
+
+@author: admin
+"""
+
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
 Created on Mon Sep 24 13:36:31 2018
 
 @author: Casey
@@ -57,11 +65,11 @@ def host_and_order_data(all_host_data, all_association_data, wild_host_associati
     
     host_data = all_host_data[['hHostNameFinal','hOrder']] # just get the host name and the order from the olival host data
     host_data.columns = ['host_name', 'order'] # change column names to be easier
-
+    
     unique_hosts = np.unique(host_data['host_name']) # get a list of unique hosts in the host data
-
+    
     unique_orders = np.unique(host_data['order']) # get a list of the unique orders in the host data
-    print unique_orders
+    #print unique_orders
     for each_order in unique_orders: # loop thorugh each order and create a node in each network for every order (I am assuming all orders will be present in all 3 networks currently- may need to change)
         wild_host_association_net.add_node(each_order)
         dom_host_association_net.add_node(each_order)
@@ -69,9 +77,15 @@ def host_and_order_data(all_host_data, all_association_data, wild_host_associati
     
     associations = all_association_data[['vVirusNameCorrected','hHostNameFinal', 'WildDomInReference']] # get the virus name, the host name, and whether the host sampled was wild or domestic
     associations.columns = ['virus', 'host', 'wild_or_dom']  # change the column names to be easier 
-
+    #print associations[associations['host']=='Homo_sapiens']
     unique_viruses = np.unique(associations['virus']) # get a list of unique viruses in the dataset
     host_order_dict = {} # create a dictionary. Will host host:order -  so I can reference what order each host is in
+    unique_hosts = list(unique_hosts)
+    human_index= unique_hosts.index('Homo_sapiens') # remove humans
+    del(unique_hosts[human_index])
+    
+    associations= associations[associations.host!= 'Homo_sapiens']
+   # create a dictionary. Will host host:order -  so I can reference what order each host is in
     for each_host in unique_hosts: # go through each host
         each_host_data = host_data.loc[host_data['host_name'] == each_host] # find the data on each host in the host data 
         host_order = each_host_data['order'] # get the order that the host is in 
@@ -140,6 +154,9 @@ def add_edges_to_host_association_net(wild_dom_or_all, host_order_dict, unique_v
         desired_network = dom_host_association_net
     if wild_dom_or_all == 'all':
         desired_network = all_host_association_net
+    for each_node in nx.nodes(desired_network):
+        if len(desired_network.neighbors(each_node)) == 0:
+            desired_network.remove_node(each_node)
     return desired_network# just return the desired network
             
             
@@ -153,8 +170,8 @@ if __name__ == '__main__':
     host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations = host_and_order_data(olival_hosts, olival_associations, wild_host_association_net, dom_host_association_net, all_host_association_net)
     what_type_of_net = 'all' # specify 'wild', 'dom', or 'all'
     desired_net = add_edges_to_host_association_net(what_type_of_net, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations)
-
     
+    nx.write_edgelist(desired_net, '/Users/admin/Dropbox (Bansal Lab)/brevity_project/data/olival_net_edgelist_no_humans_9_27.csv', data = ['weight'], delimiter = ',')
 
 
 
