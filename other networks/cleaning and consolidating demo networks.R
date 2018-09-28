@@ -54,7 +54,7 @@ helminths <- unique(helminths)
 library(codependent)
 
 df.poll <- curve.df(rob1929, 100)
-df.disp <- curve.df(sch2010, 100)
+codf.disp <- curve.df(sch2010, 100)
 df.myco <- curve.df(toju, 100)
 df.helm <- curve.df(helminths, 100)
 
@@ -117,3 +117,9 @@ g5 <- ggplot(df.helm, aes(n.host, n.par)) + xlim(0,900) + ylim(0,3500) + xlab('M
   
 
 plot_grid(plot2by2, g5, ncol=2, labels=c('','E'))
+
+
+
+# BIG CI ON HELMINTHS
+
+copredict(500,rob1929,100,1)
