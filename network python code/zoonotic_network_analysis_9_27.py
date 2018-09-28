@@ -196,6 +196,12 @@ if __name__ == '__main__':
     what_type_of_net = 'all' # specify 'wild', 'dom', or 'all'
     desired_net = add_edges_to_host_association_net(what_type_of_net, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations, is_virus_zoonotic_dict )
     
+    
+    for each_node in nx.nodes(desired_net):
+        node_neighbors = desired_net.neighbors(each_node)
+        num_node_neighbors = len(node_neighbors)
+        print each_node
+        print num_node_neighbors
     #nx.write_edgelist(desired_net, '/Users/admin/Dropbox (Bansal Lab)/brevity_project/data/zoonotic_olival_net_edgelist_no_humans_9_27.csv', data = ['weight'], delimiter = ',')
 
 
