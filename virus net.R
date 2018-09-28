@@ -1,3 +1,5 @@
+library(ggplot2)
+library(cowplot)
 
 virus <- read.csv("~/Github/brevity/olival nature 2017/associations.csv")
 virus <- virus[,c(2:1)]
@@ -125,9 +127,43 @@ df.dna <- curve.df(dnavirus,100)
 
 model.all <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=df.virus)
 predicted.all <- data.frame(pred = predict(model.all), host = df.virus$n.host)
+<<<<<<< HEAD
 g1 <- ggplot(df.virus, aes(n.host, n.par)) + xlim(0,500) + ylim(0,1500) + xlab('Mammals') + ylab('All viruses') + 
   geom_point(shape = 16, size = 2.5, show.legend = FALSE, alpha = .05, color = c('steelblue1')) + theme_bw() +
   geom_line(color='black',lwd=1,data = predicted.all, aes(x=host, y=pred))
 
 
+=======
+g1 <- ggplot(df.virus, aes(n.host, n.par)) + xlim(0,770) + ylim(0,530) + xlab('Mammals') + ylab('All viruses') + 
+  geom_point(shape = 16, size = 2.5, show.legend = FALSE, alpha = .05, color = c('mediumpurple1')) + theme_bw() +
+  geom_line(color='black',lwd=1,data = predicted.all, aes(x=host, y=pred))
+g1
+model.all
+
+model.rna <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=df.rna)
+predicted.rna <- data.frame(pred = predict(model.rna), host = df.rna$n.host)
+g2 <- ggplot(df.rna, aes(n.host, n.par)) + xlim(0,740) + ylim(0,370) + xlab('Mammals') + ylab('RNA viruses') + 
+  geom_point(shape = 16, size = 2.5, show.legend = FALSE, alpha = .05, color = c('mediumorchid1')) + theme_bw() +
+  geom_line(color='black',lwd=1,data = predicted.rna, aes(x=host, y=pred))
+g2
+model.rna
+
+model.dna <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=df.dna)
+predicted.dna <- data.frame(pred = predict(model.dna), host = df.dna$n.host)
+g3 <- ggplot(df.dna, aes(n.host, n.par)) + xlim(0,180) + ylim(0,170) + xlab('Mammals') + ylab('DNA viruses') + 
+  geom_point(shape = 16, size = 2.5, show.legend = FALSE, alpha = .05, color = c('slateblue1')) + theme_bw() +
+  geom_line(color='black',lwd=1,data = predicted.dna, aes(x=host, y=pred))
+g3
+model.dna
+
+plot1 <- plot_grid(g1, g2, g3,
+                      labels=c("A", "B", "C"), nrow=1, ncol = 3)
+
+plot2 <- plot_grid(NULL, NULL,
+                      labels=c("D", "E"), nrow=1, ncol = 2)
+
+plot3 <- plot_grid(blank, blank, nrow=1, ncol = 2)
+
+plot_grid(plot1,plot2,plot2,nrow=3)
+>>>>>>> ae8f00b33fbc5bf8fa6cae4abe3cf33de4bf44e6
 
