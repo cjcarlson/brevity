@@ -128,7 +128,7 @@ df.dna <- curve.df(dnavirus,100)
 model.all <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=df.virus)
 predicted.all <- data.frame(pred = predict(model.all), host = df.virus$n.host)
 
-g1 <- ggplot(df.virus, aes(n.host, n.par)) + xlim(0,770) + ylim(0,530) + xlab('Mammals') + ylab('All viruses') + 
+g1 <- ggplot(df.virus, aes(n.host, n.par)) + xlim(0,775) + ylim(0,650) + xlab('Mammals') + ylab('All viruses') + 
   geom_point(shape = 16, size = 2.5, show.legend = FALSE, alpha = .05, color = c('mediumpurple1')) + theme_bw() +
   geom_line(color='black',lwd=1,data = predicted.all, aes(x=host, y=pred))
 g1
