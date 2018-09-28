@@ -174,14 +174,14 @@ if __name__ == '__main__':
     #nx.write_edgelist(desired_net, '/Users/admin/Dropbox (Bansal Lab)/brevity_project/data/olival_net_edgelist_no_humans_9_27.csv', data = ['weight'], delimiter = ',')
 
 
-    for each_node in nx.nodes(desired_net):
-        #node_neighbors = desired_net.neighbors(each_node)
-        #num_node_neighbors = len(node_neighbors)
+#    for each_node in nx.nodes(desired_net):
+#        #node_neighbors = desired_net.neighbors(each_node)
+#        #num_node_neighbors = len(node_neighbors)
+##        print each_node
+##        print node_neighbors
+##        print num_node_neighbors
 #        print each_node
-#        print node_neighbors
-#        print num_node_neighbors
-        print each_node
-        print nx.eigenvector_centrality(desired_net, 100)
+    print nx.eigenvector_centrality(desired_net, 100)
 
 
 
