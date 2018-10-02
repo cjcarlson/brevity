@@ -1,39 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Thu Sep 27 14:47:30 2018
+Created on Mon Oct  1 12:54:47 2018
 
 @author: admin
 """
 
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 27 14:20:18 2018
-
-@author: admin
-"""
-
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Sep 24 13:36:31 2018
-
-@author: Casey
-
-Take Olival data and create unipartite host association networks.
-Can create three types of networks- just wild hosts, just domestic hosts, or all hosts
-The nodes in the networks are the orders of the hosts i.e.'CARNIVORA' 'CETARTIODACTYLA' 'CHIROPTERA' 'CINGULATA' 'DIDELPHIMORPHIA' 'DIPROTODONTIA' 'EULIPOTYPHLA' 'LAGOMORPHA' 'PERAMELEMORPHIA' 'PERISSODACTYLA' 'PILOSA' 'PRIMATES' 'PROBOSCIDEA' 'RODENTIA' 'SCANDENTIA'
-The association data has virus, host, and wild or domestic
-I go through each association in the Olival association data. For each virus, I get the orders of all of the hosts that the virus is associated with. I create an edge between all orders that have the same virus. 
-If an edge already exists between two orders, I increase the weight of the edge by one for each repeated association between the same two orders
-I do this jsut for wild hosts, just for domestic hosts, and for all hosts.
-Result:
-    Network where nodes are orders, edges are viral associations (a virus is found in both of the orders that are the nodes), the weight of the edge indicates the number of viruses that are shared between two orders
-
-
-
-"""
 import pandas as pd
 import networkx as nx
 import numpy as np
@@ -58,9 +30,6 @@ def read_in_files_and_create_nets():
     olival_associations = pd.read_csv('/Users/admin/Desktop/GitHub/brevity/olival nature 2017/associations.csv')
     olival_hosts = pd.read_csv('/Users/admin/Desktop/GitHub/brevity/olival nature 2017/hosts.csv')
     olival_viruses = pd.read_csv('/Users/admin/Desktop/GitHub/brevity/olival nature 2017/viruses.csv')
-    
-    #olival_associaiton[olival_association['host']]
-    
     return wild_host_association_net, dom_host_association_net, all_host_association_net, olival_associations, olival_hosts, olival_viruses
 
 
@@ -76,13 +45,20 @@ def host_and_order_data(all_host_data, all_association_data, all_virus_data, wil
     
     
     #create dict of virosus and weither they are zoonotic or not
-    virus_data = all_virus_data[['vVirusNameCorrected', 'IsZoonotic']]
-    virus_data.columns = ['virus', 'is_zoonotic']
+    virus_data = all_virus_data[['vVirusNameCorrected', 'IsZoonotic', 'IsZoonotic.stringent']]
+    virus_data.columns = ['virus', 'is_zoonotic', 'zoonotic_stringent']
     is_virus_zoonotic_dict = {}
     for each_entry in range(0, len(virus_data['virus'])):
         virus_name = virus_data['virus'][each_entry]
         is_virus_zoonotic= virus_data['is_zoonotic'][each_entry]
         is_virus_zoonotic_dict[virus_name] = is_virus_zoonotic
+    is_virus_zoonotic_dict_stringent = {}
+    for each_entry in range(0, len(virus_data['virus'])):
+        virus_name = virus_data['virus'][each_entry]
+        is_virus_zoonotic_stringent= virus_data['zoonotic_stringent'][each_entry]
+        is_virus_zoonotic_dict_stringent[virus_name] = is_virus_zoonotic_stringent
+    #print sum(is_virus_zoonotic_dict.values())
+    #print sum(is_virus_zoonotic_dict_stringent.values())
     
     #print is_virus_zoonotic_dict
     
@@ -115,14 +91,10 @@ def host_and_order_data(all_host_data, all_association_data, all_virus_data, wil
         host_order = host_order.item() # just the order (get rid of the row index)
         host_order_dict[each_host] = host_order # add the host and order to the dictionary as host: order
     
-    return host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations, is_virus_zoonotic_dict 
+    return host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations, is_virus_zoonotic_dict_stringent  
 
 
-
-
-
-
-def add_edges_to_host_association_net(wild_dom_or_all, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations, is_virus_zoonotic_dict ):
+    def add_edges_to_host_association_net(wild_dom_or_all, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations, is_virus_zoonotic_dict_stringent  ):
 #    if wild_dom_or_all == 'wild': # create wild host network
 #        for each_virus in unique_viruses: # go through each virus in the data
 #            print each_virus
@@ -158,69 +130,64 @@ def add_edges_to_host_association_net(wild_dom_or_all, host_order_dict, unique_v
 #                        edge_weight = dom_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
 #                        updated_edge_weight = edge_weight+1# add 1 to the weight of the edge and save as updated weight
 #                        dom_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight)# redraw the edge with the new weight
-    num_viruses_with_more_than_one_host = 0
-    num_viruses_with_more_than_one_order = 0
-    if wild_dom_or_all == 'all': # create all host network
-       
-        for each_virus in unique_viruses:# go through each virus in the data
-            
-            if is_virus_zoonotic_dict[each_virus] == 1:
+        num_viruses_with_more_than_one_host = 0
+        num_viruses_with_more_than_one_order = 0
+        if wild_dom_or_all == 'all': # create all host network
+           
+            for each_virus in unique_viruses:# go through each virus in the data
                 
-                all_virus_data = associations.loc[associations['virus'] ==each_virus]# get the association data for each virus for all hosts
-                #print all_virus_data
-                if len(all_virus_data['host'])>1:
+                if is_virus_zoonotic_dict_stringent[each_virus] == 1:
                     
-                    num_viruses_with_more_than_one_host = num_viruses_with_more_than_one_host+1
-                
-                host_order_list = []
-                for each_host in all_virus_data['host']:
-                    host_order_list.append(host_order_dict[each_host])
-                
-                #print host_order_list
-                if len(np.unique(host_order_list))>1:
-                    num_viruses_with_more_than_one_order = num_viruses_with_more_than_one_order+1
-                
-#                for each_order in host_order_list: 
-#                    if each_order == 'CETARTIODACTYLA':
-#                        print each_virus
-                host_combinations = list(itertools.combinations(list(all_virus_data['host']), 2))     # create all possible 2 host combinations of hosts selected above
-                
-                for each_combination in host_combinations:# go through each combination
+                    all_virus_data = associations.loc[associations['virus'] ==each_virus]# get the association data for each virus for all hosts
                     
-                    order_combination = []# an empty list to stick the orders of the hosts in
-                    for each_host in each_combination:# go through each host in the list of 2 hosts that are associated
-                        each_host_order = host_order_dict[each_host]# get the order of each host from the host- order dictionary
+                    if len(all_virus_data['host'])>1:
                         
-                        order_combination.append(each_host_order)   # put the 2 orders in the order combination list so I can make an edge between them       
-                        #print each_host
-                    if all_host_association_net.has_edge(order_combination[0], order_combination[1]) == False:# if there is no edge betweent the orders
-                        all_host_association_net.add_edge(order_combination[0], order_combination[1], weight = 1)# create an edge with a weight of 1 between the orders
-                    if all_host_association_net.has_edge(order_combination[0], order_combination[1]) == True:# if there is already an edge between the 2 orders
-                        edge_weight = all_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
-                        updated_edge_weight = edge_weight+1# add 1 to the weight of the edge and save as updated weight
-                        all_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight)# redraw the edge with the new weight
-#    
-    #print num_viruses_with_more_than_one_host 
-    #print num_viruses_with_more_than_one_order 
-    
-    # just want to return the network that I have specified 
-    if wild_dom_or_all == 'wild':
-        desired_network = wild_host_association_net
-    if wild_dom_or_all == 'dom':
-        desired_network = dom_host_association_net
-    if wild_dom_or_all == 'all':
-        desired_network = all_host_association_net
-    for each_node in nx.nodes(desired_network):
-        if len(desired_network.neighbors(each_node)) == 0:
-            desired_network.remove_node(each_node)
-    #print num_viruses
-    #print nx.nodes(desired_net)
+                        num_viruses_with_more_than_one_host = num_viruses_with_more_than_one_host+1
+                    
+                    host_order_list = []
+                    for each_host in all_virus_data['host']:
+                        host_order_list.append(host_order_dict[each_host])
+                    
+                    print host_order_list
+                    if len(np.unique(host_order_list))>1:
+                        num_viruses_with_more_than_one_order = num_viruses_with_more_than_one_order+1
+                    
+                    
+                    host_combinations = list(itertools.combinations(list(all_virus_data['host']), 2))     # create all possible 2 host combinations of hosts selected above
+                    
+                    for each_combination in host_combinations:# go through each combination
+                        
+                        order_combination = []# an empty list to stick the orders of the hosts in
+                        for each_host in each_combination:# go through each host in the list of 2 hosts that are associated
+                            each_host_order = host_order_dict[each_host]# get the order of each host from the host- order dictionary
+                            order_combination.append(each_host_order)   # put the 2 orders in the order combination list so I can make an edge between them       
+                        
+                        if all_host_association_net.has_edge(order_combination[0], order_combination[1]) == False:# if there is no edge betweent the orders
+                            all_host_association_net.add_edge(order_combination[0], order_combination[1], weight = 1)# create an edge with a weight of 1 between the orders
+                        if all_host_association_net.has_edge(order_combination[0], order_combination[1]) == True:# if there is already an edge between the 2 orders
+                            edge_weight = all_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
+                            updated_edge_weight = edge_weight+1# add 1 to the weight of the edge and save as updated weight
+                            all_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight)# redraw the edge with the new weight
+        
+        #print num_viruses_with_more_than_one_host 
+        #print num_viruses_with_more_than_one_order 
+        
+        # just want to return the network that I have specified 
+        if wild_dom_or_all == 'wild':
+            desired_network = wild_host_association_net
+        if wild_dom_or_all == 'dom':
+            desired_network = dom_host_association_net
+        if wild_dom_or_all == 'all':
+            desired_network = all_host_association_net
+        for each_node in nx.nodes(desired_network):
+            if len(desired_network.neighbors(each_node)) == 0:
+                desired_network.remove_node(each_node)
+        #print num_viruses
+        #print nx.nodes(desired_net)
     return desired_network# just return the desired network
             
             
         
-        
-            
 
 if __name__ == '__main__':
 
@@ -228,56 +195,7 @@ if __name__ == '__main__':
     host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations, is_virus_zoonotic_dict  = host_and_order_data(olival_hosts, olival_associations, olival_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net)
     what_type_of_net = 'all' # specify 'wild', 'dom', or 'all'
     desired_net = add_edges_to_host_association_net(what_type_of_net, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations, is_virus_zoonotic_dict )
-    
-    
-    print nx.number_of_edges(desired_net)
-    desired_net.remove_edges_from( desired_net.selfloop_edges())
-    print nx.number_of_edges(desired_net)
-    
-    for each_node in nx.nodes(desired_net):
-        node_degree = desired_net.degree(each_node)
-        print each_node
-        #print node_degree
-        neighbor_weights = []
-        node_neighbors = desired_net.neighbors(each_node)
-        for each_node_neighbor in node_neighbors:
-            edge_weight = desired_net[each_node][each_node_neighbor]['weight']
-            
-            neighbor_weights.append(edge_weight)
-        node_strength = sum(neighbor_weights)
-        if node_degree >0:
-            average_node_strength = float(node_strength)/float(node_degree)
-            print average_node_strength
-    
-#    print nx.number_of_edges(desired_net)
-#    edge_weight_matrix = nx.adjacency_matrix(desired_net, weight = 'weight')
-#    filename = "/Users/admin/Dropbox (Bansal Lab)/brevity_project/reanalysis/edge_weight_matrix_zoonotic_net.csv"
-#    #for each_edge in nx.edges(desired_net):
-#        #print each_edge['weight']
-#    print nx.get_edge_attributes(desired_net, 'weight')
-#        #print each
-#        
-#    f= open(filename,"a+")
-#    #f.write(str(nx.get_edge_attributes(desired_net, 'weight')))
-#    #f.close()
-#    for each_edge, each_weight in nx.get_edge_attributes(desired_net, 'weight').iteritems():
-#        f.write(str(each_edge)+"\n"+str(each_weight)+"\n")
-#        #print each_weight
-#    f.close()
-    
-    
-    #print nx.number_of_edges(desired_net)
-    #print nx.adjacency_matrix(desired_net, weight = 'weight')
-#    for each_node in nx.nodes(desired_net):
-#        node_neighbors = desired_net.neighbors(each_node)
-#        num_node_neighbors = len(node_neighbors)
-#        print each_node
-#        print num_node_neighbors
-    #nx.write_edgelist(desired_net, '/Users/admin/Dropbox (Bansal Lab)/brevity_project/reanalysis/zoonotic_olival_net_edgelist_no_humans_9_27.csv', data = ['weight'], delimiter = ',')
+    #nx.write_edgelist(desired_net, '/Users/admin/Dropbox (Bansal Lab)/brevity_project/data/zoonotic_stringent_olival_net_edgelist_no_humans_10_1.csv', data = ['weight'], delimiter = ',')
 
 
-
-
-
-    print nx.eigenvector_centrality(desired_net, 100)
-
+    

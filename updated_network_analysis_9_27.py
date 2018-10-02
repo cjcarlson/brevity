@@ -69,7 +69,7 @@ def host_and_order_data(all_host_data, all_association_data, wild_host_associati
     unique_hosts = np.unique(host_data['host_name']) # get a list of unique hosts in the host data
     
     unique_orders = np.unique(host_data['order']) # get a list of the unique orders in the host data
-    print unique_orders
+    #print unique_orders
     for each_order in unique_orders: # loop thorugh each order and create a node in each network for every order (I am assuming all orders will be present in all 3 networks currently- may need to change)
         wild_host_association_net.add_node(each_order)
         dom_host_association_net.add_node(each_order)
@@ -91,7 +91,7 @@ def host_and_order_data(all_host_data, all_association_data, wild_host_associati
         host_order = each_host_data['order'] # get the order that the host is in 
         host_order = host_order.item() # just the order (get rid of the row index)
         host_order_dict[each_host] = host_order # add the host and order to the dictionary as host: order
-    
+   
     return host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations
 
 
@@ -100,56 +100,78 @@ def host_and_order_data(all_host_data, all_association_data, wild_host_associati
 
 
 def add_edges_to_host_association_net(wild_dom_or_all, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations):
-    if wild_dom_or_all == 'wild': # create wild host network
-        for each_virus in unique_viruses: # go through each virus in the data
-            wild_virus_data = associations.loc[(associations['virus'] ==each_virus) & (associations['wild_or_dom']=='wild')] # get the association data for each virus where the host is wild
-            host_combinations = list(itertools.combinations(list(wild_virus_data['host']), 2)) # create all possible 2 host combinations of hosts selected above   
-            for each_combination in host_combinations: # go through each combination
-                order_combination = [] # an empty list to stick the orders of the hosts in 
-                for each_host in each_combination: # go through each host in the list of 2 hosts that are associated
-                    each_host_order = host_order_dict[each_host] # get the order of each host from the host- order dictionary
-                    order_combination.append(each_host_order)  # put the 2 orders in the order combination list so I can make an edge between them     
-                if wild_host_association_net.has_edge(order_combination[0], order_combination[1]) == False: # if there is no edge betweent the orders
-                    wild_host_association_net.add_edge(order_combination[0], order_combination[1], weight = 1) # create an edge with a weight of 1 between the orders
-                if wild_host_association_net.has_edge(order_combination[0], order_combination[1]) == True: # if there is already an edge between the 2 orders
-                    edge_weight = wild_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
-                    updated_edge_weight = edge_weight+1 # add 1 to the weight of the edge and save as updated weight
-                    wild_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight) # redraw the edge with the new weight
-    
-    if wild_dom_or_all == 'dom': # create domestic host network
-        for each_virus in unique_viruses:# go through each virus in the data
-            dom_virus_data = associations.loc[(associations['virus'] ==each_virus) & (associations['wild_or_dom']=='domestic')]# get the association data for each virus where the host is domestic
-            host_combinations = list(itertools.combinations(list(dom_virus_data['host']), 2))  # create all possible 2 host combinations of hosts selected above   
-            for each_combination in host_combinations:# go through each combination
-                order_combination = []# an empty list to stick the orders of the hosts in
-                for each_host in each_combination:# go through each host in the list of 2 hosts that are associated
-                    each_host_order = host_order_dict[each_host]# get the order of each host from the host- order dictionary
-                    order_combination.append(each_host_order)       # put the 2 orders in the order combination list so I can make an edge between them     
-                if dom_host_association_net.has_edge(order_combination[0], order_combination[1]) == False:# if there is no edge betweent the orders
-                    dom_host_association_net.add_edge(order_combination[0], order_combination[1], weight = 1)# create an edge with a weight of 1 between the orders
-                if dom_host_association_net.has_edge(order_combination[0], order_combination[1]) == True:# if there is already an edge between the 2 orders
-                    edge_weight = dom_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
-                    updated_edge_weight = edge_weight+1# add 1 to the weight of the edge and save as updated weight
-                    dom_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight)# redraw the edge with the new weight
-    
+#    if wild_dom_or_all == 'wild': # create wild host network
+#        for each_virus in unique_viruses: # go through each virus in the data
+#            wild_virus_data = associations.loc[(associations['virus'] ==each_virus) & (associations['wild_or_dom']=='wild')] # get the association data for each virus where the host is wild
+#            host_combinations = list(itertools.combinations(list(wild_virus_data['host']), 2)) # create all possible 2 host combinations of hosts selected above   
+#            for each_combination in host_combinations: # go through each combination
+#                order_combination = [] # an empty list to stick the orders of the hosts in 
+#                for each_host in each_combination: # go through each host in the list of 2 hosts that are associated
+#                    each_host_order = host_order_dict[each_host] # get the order of each host from the host- order dictionary
+#                    order_combination.append(each_host_order)  # put the 2 orders in the order combination list so I can make an edge between them     
+#                if wild_host_association_net.has_edge(order_combination[0], order_combination[1]) == False: # if there is no edge betweent the orders
+#                    wild_host_association_net.add_edge(order_combination[0], order_combination[1], weight = 1) # create an edge with a weight of 1 between the orders
+#                if wild_host_association_net.has_edge(order_combination[0], order_combination[1]) == True: # if there is already an edge between the 2 orders
+#                    edge_weight = wild_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
+#                    updated_edge_weight = edge_weight+1 # add 1 to the weight of the edge and save as updated weight
+#                    wild_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight) # redraw the edge with the new weight
+#    
+#    if wild_dom_or_all == 'dom': # create domestic host network
+#        for each_virus in unique_viruses:# go through each virus in the data
+#            dom_virus_data = associations.loc[(associations['virus'] ==each_virus) & (associations['wild_or_dom']=='domestic')]# get the association data for each virus where the host is domestic
+#            host_combinations = list(itertools.combinations(list(dom_virus_data['host']), 2))  # create all possible 2 host combinations of hosts selected above   
+#            for each_combination in host_combinations:# go through each combination
+#                order_combination = []# an empty list to stick the orders of the hosts in
+#                for each_host in each_combination:# go through each host in the list of 2 hosts that are associated
+#                    each_host_order = host_order_dict[each_host]# get the order of each host from the host- order dictionary
+#                    order_combination.append(each_host_order)       # put the 2 orders in the order combination list so I can make an edge between them     
+#                if dom_host_association_net.has_edge(order_combination[0], order_combination[1]) == False:# if there is no edge betweent the orders
+#                    dom_host_association_net.add_edge(order_combination[0], order_combination[1], weight = 1)# create an edge with a weight of 1 between the orders
+#                if dom_host_association_net.has_edge(order_combination[0], order_combination[1]) == True:# if there is already an edge between the 2 orders
+#                    edge_weight = dom_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
+#                    updated_edge_weight = edge_weight+1# add 1 to the weight of the edge and save as updated weight
+#                    dom_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight)# redraw the edge with the new weight
+    num_viruses_with_more_than_one_host = 0
+    num_viruses_with_more_than_one_order = 0
     if wild_dom_or_all == 'all': # create all host network
         for each_virus in unique_viruses:# go through each virus in the data
+            #num_viruses = num_viruses+1
+            
             all_virus_data = associations.loc[associations['virus'] ==each_virus]# get the association data for each virus for all hosts
+            #print all_virus_data['host']
+            #print len(all_virus_data['host'])
+            if len(all_virus_data['host'])>1:
+                    num_viruses_with_more_than_one_host = num_viruses_with_more_than_one_host+1
+            host_order_list = []
+            for each_host in all_virus_data['host']:
+                host_order_list.append(host_order_dict[each_host])
+            #print host_order_list
+            if len(np.unique(host_order_list))>1:
+                num_viruses_with_more_than_one_order = num_viruses_with_more_than_one_order+1
+            
+            
             host_combinations = list(itertools.combinations(list(all_virus_data['host']), 2))     # create all possible 2 host combinations of hosts selected above
+            
             for each_combination in host_combinations:# go through each combination
+                
                 order_combination = []# an empty list to stick the orders of the hosts in
                 for each_host in each_combination:# go through each host in the list of 2 hosts that are associated
+                    
                     each_host_order = host_order_dict[each_host]# get the order of each host from the host- order dictionary
-                    order_combination.append(each_host_order)   # put the 2 orders in the order combination list so I can make an edge between them       
+                    
+                    order_combination.append(each_host_order)   # put the 2 orders in the order combination list so I can make an edge between them   
+                
                 if all_host_association_net.has_edge(order_combination[0], order_combination[1]) == False:# if there is no edge betweent the orders
                     all_host_association_net.add_edge(order_combination[0], order_combination[1], weight = 1)# create an edge with a weight of 1 between the orders
                 if all_host_association_net.has_edge(order_combination[0], order_combination[1]) == True:# if there is already an edge between the 2 orders
                     edge_weight = all_host_association_net[order_combination[0]][order_combination[1]]['weight'] # get the current weight of that edge
                     updated_edge_weight = edge_weight+1# add 1 to the weight of the edge and save as updated weight
                     all_host_association_net.add_edge(order_combination[0], order_combination[1], weight = updated_edge_weight)# redraw the edge with the new weight
+    #print num_viruses_with_more_than_one_host
+    #print num_viruses_with_more_than_one_order
     # just want to return the network that I have specified 
     if wild_dom_or_all == 'wild':
-        desired_network = wild_host_association_nneet
+        desired_network = wild_host_association_net
     if wild_dom_or_all == 'dom':
         desired_network = dom_host_association_net
     if wild_dom_or_all == 'all':
@@ -157,6 +179,7 @@ def add_edges_to_host_association_net(wild_dom_or_all, host_order_dict, unique_v
     for each_node in nx.nodes(desired_network):
         if len(desired_network.neighbors(each_node)) == 0:
             desired_network.remove_node(each_node)
+    
     return desired_network# just return the desired network
             
             
@@ -171,7 +194,50 @@ if __name__ == '__main__':
     what_type_of_net = 'all' # specify 'wild', 'dom', or 'all'
     desired_net = add_edges_to_host_association_net(what_type_of_net, host_order_dict, unique_viruses, wild_host_association_net, dom_host_association_net, all_host_association_net, associations)
     
-    #nx.write_edgelist(desired_net, '/Users/admin/Dropbox (Bansal Lab)/brevity_project/data/olival_net_edgelist_no_humans_9_27.csv', data = ['weight'], delimiter = ',')
+#    for each_node in nx.nodes(desired_net):
+#        each_node_neighbors = desired_net.neighbors(each_node)
+#        print each_node
+#        print each_node_neighbors
+    print nx.number_of_edges(desired_net)
+    desired_net.remove_edges_from( desired_net.selfloop_edges())
+    print nx.number_of_edges(desired_net)
+    
+    for each_node in nx.nodes(desired_net):
+        node_degree = desired_net.degree(each_node)
+        print each_node
+        #print node_degree
+        neighbor_weights = []
+        node_neighbors = desired_net.neighbors(each_node)
+        for each_node_neighbor in node_neighbors:
+            edge_weight = desired_net[each_node][each_node_neighbor]['weight']
+            
+            neighbor_weights.append(edge_weight)
+        node_strength = sum(neighbor_weights)
+        if node_degree >0:
+            average_node_strength = float(node_strength)/float(node_degree)
+            print average_node_strength
+
+#    print nx.number_of_edges(desired_net)
+#    edge_weight_matrix = nx.adjacency_matrix(desired_net, weight = 'weight')
+#    filename = "/Users/admin/Dropbox (Bansal Lab)/brevity_project/reanalysis/edge_weight_matrix_all_net.csv"
+#    #for each_edge in nx.edges(desired_net):
+#        #print each_edge['weight']
+#    print nx.get_edge_attributes(desired_net, 'weight')
+#        #print each
+#        
+#    f= open(filename,"a+")
+#    #f.write(str(nx.get_edge_attributes(desired_net, 'weight')))
+#    #f.close()
+#    for each_edge, each_weight in nx.get_edge_attributes(desired_net, 'weight').iteritems():
+#        f.write(str(each_edge)+"\n"+str(each_weight)+"\n")
+#        #print each_weight
+#    f.close()
+#    for each_line in edge_weight_matrix:
+#        f.write(str(each_line)+"\n")
+#    f.close()
+        
+    #edge_weight_matrix.to_csv('/Users/admin/Dropbox (Bansal Lab)/brevity_project/reanalysis/edge_weight_matrix_all_net.csv', index = False)
+    #nx.write_edgelist(desired_net, '/Users/admin/Dropbox (Bansal Lab)/brevity_project/reanalysis/olival_net_edgelist_no_humans_9_27.csv', data = ['weight'], delimiter = ',')
 
 
 #    for each_node in nx.nodes(desired_net):
