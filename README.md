@@ -1,5 +1,7 @@
 # Applying ecological network theory to re-estimate global viral diversity: host sharing matters
-A short commentary using bipartite rarefaction to estimate viral diversity in mammals. Currently in review at _Nature Ecology and Evolution_.
+A short commentary using bipartite rarefaction to estimate viral diversity in mammals. 
+
+Currently in review at _Nature Ecology and Evolution_.
 
 The publication
 ----------------------
