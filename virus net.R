@@ -1,7 +1,8 @@
 library(ggplot2)
 library(cowplot)
+library(codependent)
 
-virus <- read.csv("~/Github/brevity/olival nature 2017/associations.csv")
+virus <- read.csv("~/Github/brevity/Olival Nature 2017 Raw Data/associations.csv")
 virus <- virus[,c(2:1)]
 names(virus) <- c('Host','Parasite')
 virus <- virus[!(virus$Host %in% c('Homo_sapiens')),]
@@ -17,7 +18,7 @@ mean(data.frame(table(virus$Host))$Freq)
 14.93607*1435
 14.93607*1439
 
-virusmeta <- read.csv("~/Github/brevity/olival nature 2017/viruses.csv")
+virusmeta <- read.csv("~/Github/brevity/Olival Nature 2017 Raw Data/viruses.csv")
 
 dnalist <- unique(virusmeta[virusmeta$vDNAoRNA=='DNA',]$vVirusNameCorrected)
 rnalist <- unique(virusmeta[virusmeta$vDNAoRNA=='RNA',]$vVirusNameCorrected)
@@ -51,7 +52,7 @@ for (i in 1:nrow(virus)) {
 virus$zoonotic[i] <- virusmeta[virusmeta$vVirusNameCorrected==virus$vVirusNameCorrected[i],]$IsZoonotic
 }
 
-hostmeta <- read.csv("~/Github/brevity/olival nature 2017/hosts.csv")
+hostmeta <- read.csv("~/Github/brevity/Olival Nature 2017 Raw Data/hosts.csv")
 virus$hostgroup = ''
 
 for (i in 1:nrow(virus)) {
@@ -68,7 +69,7 @@ df <- table(virus$hostgroup,virus$zoonotic)
 
 copredict.ci(5291,virus,200,1)
 
-virusmeta <- read.csv("~/Github/brevity/olival nature 2017/viruses.csv")
+virusmeta <- read.csv("~/Github/brevity/Olival Nature 2017 Raw Data/viruses.csv")
 
 dnalist <- unique(virusmeta[virusmeta$vDNAoRNA=='DNA',]$vVirusNameCorrected)
 rnalist <- unique(virusmeta[virusmeta$vDNAoRNA=='RNA',]$vVirusNameCorrected)
@@ -166,7 +167,7 @@ plot_grid(plot1,plot2,plot2,nrow=3)
 #### supp figure
 
 
-virus <- read.csv("~/Github/brevity/olival nature 2017/associations.csv")
+virus <- read.csv("~/Github/brevity/Olival Nature 2017 Raw Data/associations.csv")
 virus <- virus[,c(2:1)]
 names(virus) <- c('Host','Parasite')
 
