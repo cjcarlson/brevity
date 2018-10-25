@@ -220,4 +220,4 @@ virus <- read.csv("~/Github/brevity/Olival Nature 2017 Raw Data/associations.csv
 virus <- virus[,c(2:1)]
 names(virus) <- c('Host','Parasite')
 
-df.virus <- binera(virus,100,plots=true)
+df.virus <- binera(virus,100,plots=TRUE)
