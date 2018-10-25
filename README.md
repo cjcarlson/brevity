@@ -7,8 +7,6 @@ The publication
 ----------------------
 Authors: Colin J. Carlson, Casey M. Zipfel, Romain Garnier, Shweta Bansal
 
-Manuscript draft at https://v2.overleaf.com/5221447147xwzgrcvmqnpw
-
 The analyses
 ----------------------
 Most analyses require the _codependent_ R package, which you can find at 
