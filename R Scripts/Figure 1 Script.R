@@ -54,7 +54,7 @@ helminths <- unique(helminths)
 library(codependent)
 
 df.poll <- curve.df(rob1929, 100)
-codf.disp <- curve.df(sch2010, 100)
+df.disp <- curve.df(sch2010, 100)
 df.myco <- curve.df(toju, 100)
 df.helm <- curve.df(helminths, 100)
 
