@@ -190,3 +190,97 @@ plot2by2 <- plot_grid(g2, g3, g1, g4, g5, g6,
                       labels=c("A", "B", "C", "D", "E", "F"), nrow=3, ncol = 2)
 plot2by2
 
+
+
+##################
+
+power.fit <- function(df.input,pred=FALSE,ext=0) {
+  
+  df <- df.input; names(df) <- c('h','p')
+  
+  lin <- lm(p ~ h, data=df)
+  pow <- nls(p ~ b0*h^b1, start=list(b0=1,b1=1), control=nls.control(maxiter=500), data = df)
+  pow.q <- nls(p ~ exp(b0+b1*log(h)+b2*log(h)^2), start=list(b0=1,b1=1,b2=1), control=nls.control(maxiter=1000), data=df)
+  epm1 <- nls(p ~ a*h^(b*h^(-d)), start=list(a=1,b=1,d=0), control=nls.control(maxiter=1000),  data = df)
+  epm2 <- nls(p ~ a*h^(b-(d/h)), start=list(a=1,b=1,d=0), control=nls.control(maxiter=1000),  data = df)
+  p1 <- nls(p ~ a*h^(b)*exp(-d*h), start=list(a=1,b=1,d=0), control=nls.control(maxiter=1000),  data = df)
+  p2 <- nls(p ~ a*h^(b)*exp(-d/h), start=list(a=1,b=1,d=0), control=nls.control(maxiter=1000),  data = df)
+  
+  results.df <- data.frame(AIC(lin,pow,pow.q,epm1,epm2,p1,p2))
+
+  results.df$min <- as.numeric(results.df$AIC == min(results.df$AIC))
+  if(pred==TRUE) {
+    
+    pred.1 <- predict(lin,list(h=ext))
+    pred.2 <- predict(pow,list(h=ext))
+    pred.3 <- predict(pow.q,list(h=ext))
+    pred.4 <- predict(epm1,list(h=ext))
+    pred.5 <- predict(epm2,list(h=ext))
+    pred.6 <- predict(p1,list(h=ext))
+    pred.7 <- predict(p2,list(h=ext))
+    
+    results.df$pred <- c(pred.1,
+                         pred.2,
+                         pred.3,
+                         pred.4,
+                         pred.5,
+                         pred.6,
+                         pred.7)
+    
+    return(results.df)
+    
+  } else {
+    
+    return(results.df)
+    
+  }
+  
+}
+  
+power.fit.noepm <- function(df.input,pred=FALSE,ext=0) {
+  
+  df <- df.input; names(df) <- c('h','p')
+  
+  lin <- lm(p ~ h, data=df)
+  pow <- nls(p ~ b0*h^b1, start=list(b0=1,b1=1), control=nls.control(maxiter=500), data = df)
+  pow.q <- nls(p ~ exp(b0+b1*log(h)+b2*log(h)^2), start=list(b0=1,b1=1,b2=1), control=nls.control(maxiter=1000), data=df)
+  epm2 <- nls(p ~ a*h^(b-(d/h)), start=list(a=1,b=1,d=0), control=nls.control(maxiter=1000),  data = df)
+  p1 <- nls(p ~ a*h^(b)*exp(-d*h), start=list(a=1,b=1,d=0), control=nls.control(maxiter=1000),  data = df)
+  
+  results.df <- data.frame(AIC(lin,pow,pow.q,epm2,p1))
+  
+  results.df$min <- as.numeric(results.df$AIC == min(results.df$AIC))
+  if(pred==TRUE) {
+    
+    pred.1 <- predict(lin,list(h=ext))
+    pred.2 <- predict(pow,list(h=ext))
+    pred.3 <- predict(pow.q,list(h=ext))
+    pred.5 <- predict(epm2,list(h=ext))
+    pred.6 <- predict(p1,list(h=ext))
+    
+    results.df$pred <- c(pred.1,
+                         pred.2,
+                         pred.3,
+                         pred.5,
+                         pred.6)
+    
+    return(results.df)
+    
+  } else {
+    
+    return(results.df)
+    
+  }
+  
+}
+
+power.fit(df.disp)
+power.fit.noepm(df.myco)
+power.fit.noepm(df.poll)
+power.fit(df.helm)
+power.fit(df.dna)
+power.fit(df.rna)
+
+power.fit(df.dna,pred=TRUE,ext=5291)
+power.fit(df.rna,pred=TRUE,ext=5291)
+
