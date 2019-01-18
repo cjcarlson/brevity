@@ -88,6 +88,77 @@ predicted.dna <- data.frame(pred = predict(model.dna), host = df.dna$n.host)
 
 ###################
 
+ggplotter <- function(data, xlab, ylab, colorname) {
+  
+  model <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=data)
+  model2 <- lm(n.par~n.host,data=data)
+  model3 <- lm(n.par~log(n.host),data=data)
+  pred <- data.frame(pred = predict(model), host = data$n.host)
+  pred2 <- data.frame(pred = predict(model2), host = data$n.host)
+  pred3 <- data.frame(pred = predict(model3), host = data$n.host)
+  g <- ggplot(data, aes(n.host, n.par)) + xlab(xlab) + ylab(ylab) + 
+    geom_point(shape = 16, size = 2.5, show.legend = FALSE, alpha = .20, color = c(colorname)) + theme_bw() +
+    geom_line(color='black',lwd=1,data = pred, aes(x=host, y=pred))+
+    geom_line(color='black',lwd=1,lty=2,data = pred2, aes(x=host, y=pred))+
+    geom_line(color='black',lwd=1,lty=3,data = pred3, aes(x=host, y=pred))
+  g
+  
+}
+
+g1 <- ggplotter(df.poll,'Plants','Pollinators','steelblue1')
+g2 <- ggplotter(df.disp,'Plants','Seed dispersers','red')
+g3 <- ggplotter(df.myco,'Plants','Microbe OTUs','orange')
+g4 <- ggplotter(df.helm,'Hosts','Helminths','seagreen1')
+g5 <- ggplotter(df.rna,'Hosts','RNA viruses','mediumorchid1')
+g6 <- ggplotter(df.dna,'Hosts','DNA viruses','slateblue1')
+
+plot2by2 <- plot_grid(g2, g3, g1, g4, g5, g6,
+                      labels=c("A", "B", "C", "D", "E", "F"), nrow=3, ncol = 2)
+plot2by2
+
+aic.doer <- function(data) {
+  
+  model <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=data)
+  model2 <- lm(n.par~n.host,data=data)
+  model3 <- lm(n.par~log(n.host),data=data)
+  AIC(model, model2, model3)
+  
+}
+
+t(data.frame(aic.doer(df.poll)$AIC,
+aic.doer(df.disp)$AIC,
+aic.doer(df.myco)$AIC,
+aic.doer(df.helm)$AIC,
+aic.doer(df.rna)$AIC,
+aic.doer(df.dna)$AIC))
+
+
+z.doer <- function(data) {
+  
+  model <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=data)
+  
+  q <- stats::coef(model)
+  p.cis <- nlstools::confint2(model)
+  
+  return(c(q[2],p.cis[2,1:2]))
+  
+}
+
+
+round(t(data.frame(z.doer(df.poll),
+             z.doer(df.disp),
+             z.doer(df.myco),
+             z.doer(df.helm),
+             z.doer(df.rna),
+             z.doer(df.dna))),4)
+
+
+
+
+
+###################
+load(file.choose())
+
 model.poll <- nls(n.par~b*n.host^z,start = list(b = 1, z = 0.5),data=df.poll)
 predicted.poll <- data.frame(pred = predict(model.poll), host = df.poll$n.host)
 g1 <- ggplot(log(df.poll), aes(n.host, n.par)) + xlab('Plants') + ylab('Pollinators') + 
