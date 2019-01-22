@@ -22,7 +22,7 @@ mean(data.frame(table(virus$Host))$Freq)
 
 ### Predict total richness ### 
 raw.ests <- copredict(virus,5291,1000)
-
+raw.ests
 
 ### Derive the rates of sampling ###
 
@@ -59,6 +59,9 @@ corrected
 raw.ests.50 <- copredict.ci(virus,5291,100)
 raw.ests.50[,3] <- dmm::unfactor(raw.ests.50[,3])
 raw.ests.50[,4] <- dmm::unfactor(raw.ests.50[,4])
+
+raw.ests.50
+
 corrected.50 <- raw.ests.50[3,2:4]/rates
 corrected.50
 
@@ -71,7 +74,7 @@ corrected.50
 
 ### PART B. Separate analyses for DNA and RNA viruses ### 
 
-virusmeta <- read.csv("~/Github/brevity/Olival Nature 2017 Raw Data/viruses.csv")
+virusmeta <- read.csv("../Github/brevity/Olival Nature 2017 Raw Data/viruses.csv")
 
 dnalist <- unique(virusmeta[virusmeta$vDNAoRNA=='DNA',]$vVirusNameCorrected)
 rnalist <- unique(virusmeta[virusmeta$vDNAoRNA=='RNA',]$vVirusNameCorrected)
@@ -85,12 +88,20 @@ dnavirus <- virus[virus$Parasite %in% dnalist,]
 raw.ests.dna <- copredict(dnavirus,5291,1000)
 raw.ests.rna <- copredict(rnavirus,5291,1000)
 
+raw.ests.dna
+raw.ests.rna
+
 raw.ests.50.dna <- copredict.ci(dnavirus,5291,1000)
 raw.ests.50.rna <- copredict.ci(rnavirus,5291,1000)
+
+raw.ests.50.dna
+raw.ests.50.rna
 
 corrected.dna <- raw.ests.dna[[1]]/rates
 corrected.rna <- raw.ests.rna[[1]]/rates
 
+corrected.dna
+corrected.rna
 
 
 raw.ests.50.dna[,3] <- dmm::unfactor(raw.ests.50.dna[,3])
@@ -108,9 +119,14 @@ corrected.dna+corrected.rna
 corrected.50.dna+corrected.50.rna
 
 
+corrected.dna*0.141
+corrected.rna*0.417
+corrected.dna*0.141 + corrected.rna*0.417
 
 
-
+corrected.50.dna*0.141
+corrected.50.rna*0.417
+corrected.50.dna*0.141 + corrected.50.rna*0.417
 
 
 
