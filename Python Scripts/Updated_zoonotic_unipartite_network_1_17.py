@@ -66,6 +66,7 @@ def read_in_files_and_create_nets():
     olival_hosts = pd.read_csv('~/Github/brevity/Olival Nature 2017 Raw Data/hosts.csv')
     olival_viruses = pd.read_csv('~/Github/brevity/Olival Nature 2017 Raw Data/viruses.csv')
     
+
     return all_host_association_net, olival_associations, olival_hosts, olival_viruses
 
 def host_and_order_data(all_host_data, all_association_data, all_virus_data, all_host_association_net):
@@ -234,7 +235,8 @@ if __name__ == '__main__':
         node_strength = sum(neighbor_weights)
         if node_degree >0:
             average_node_strength = float(node_strength)/float(node_degree)
-
+            #print each_node
+            #print average_node_strength
             node_strength_dict[each_node] = average_node_strength
 
     num_samples_dict = nx.get_node_attributes(zoonotic_host_association_net, 'num_samples')
