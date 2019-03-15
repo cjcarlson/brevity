@@ -65,7 +65,6 @@ def read_in_files_and_create_nets():
     olival_associations = pd.read_csv('~/Github/brevity/Olival Nature 2017 Raw Data/associations.csv')
     olival_hosts = pd.read_csv('~/Github/brevity/Olival Nature 2017 Raw Data/hosts.csv')
     olival_viruses = pd.read_csv('~/Github/brevity/Olival Nature 2017 Raw Data/viruses.csv')
-    
 
     return all_host_association_net, olival_associations, olival_hosts, olival_viruses
 
@@ -168,6 +167,13 @@ def add_edges_to_host_association_net(host_order_dict, unique_viruses, all_host_
             jaccards_index = float(num_shared_viruses)/float((num_order1_viruses+num_order2_viruses-num_shared_viruses))
                 
             all_host_association_net.add_edge(order1, order2, weight = jaccards_index)
+            #if 'HUMANS' in each_combination:
+            print 'combo', each_combination
+            print 'j index', jaccards_index
+            print 'numerator- num shared viruses', num_shared_viruses
+            print 'num order 1 viruses', num_order1_viruses
+            print 'num order 2 viruses', num_order2_viruses
+            print 'denom', float((num_order1_viruses+num_order2_viruses-num_shared_viruses))
     
     #remove self-loops        
     all_host_association_net.remove_edges_from(all_host_association_net.selfloop_edges())
