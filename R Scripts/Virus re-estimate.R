@@ -5,7 +5,7 @@ library(codependent)
 ### PART A. TOTAL VIRAL RICHNESS ###
 
 # Read in data 
-virus <- read.csv("../Github/brevity/Olival Nature 2017 Raw Data/associations.csv")
+virus <- read.csv("~/Documents/Github/brevity/Olival Nature 2017 Raw Data/associations.csv")
 virus <- virus[,c(2:1)]
 names(virus) <- c('Host','Parasite')
 # Exclude humans
@@ -26,8 +26,8 @@ raw.ests
 
 ### Derive the rates of sampling ###
 
-kevin <- read.csv("../Github/brevity/Olival Nature 2017 Raw Data/associations.csv")
-mac.rare <- read.csv('../GitHub/GVP_Science/data/output/macaca_estimates_by_viral_family.csv')
+kevin <- read.csv("~/Documents/Github/brevity/Olival Nature 2017 Raw Data/associations.csv")
+mac.rare <- read.csv('~/Documents/GitHub/GVP_Science/data/output/macaca_estimates_by_viral_family.csv')
 mac.total = 184
 mac.raw <- kevin[kevin$hHostNameFinal=='Macaca_mulatta',]$vVirusNameCorrected
 
@@ -38,7 +38,7 @@ mac.uci <- sum(mac.rare$UCL) + (mac.total-sum(mac.rare$Observed))
 mac.rate <- length(mac.raw)/c(mac.est,mac.lci,mac.uci)
 
 
-pt.rare <- read.csv('../GitHub/GVP_Science/data/output/pteropus_estimates_by_viral_family.csv')
+pt.rare <- read.csv('~/Documents/GitHub/GVP_Science/data/output/pteropus_estimates_by_viral_family.csv')
 pt.total = 55
 pt.raw <- kevin[kevin$hHostNameFinal=='Pteropus_giganteus',]$vVirusNameCorrected
 
@@ -153,7 +153,7 @@ corrected.50.dna*0.141 + corrected.50.rna*0.417
 
 ### Derive the rates of sampling ###
 
-mac.rare <- read.csv('../GitHub/GVP_Science/data/output/macaca_estimates_by_viral_family.csv')
+mac.rare <- read.csv('~/Documents/GitHub/GVP_Science/data/output/macaca_estimates_by_viral_family.csv')
 mac.rare <- mac.rare[mac.rare$Class=='DNA',]
 mac.total = 23
 mac.raw <- kevin[kevin$hHostNameFinal=='Macaca_mulatta',]$vVirusNameCorrected
@@ -165,7 +165,7 @@ mac.uci <- sum(mac.rare$UCL) + (mac.total-sum(mac.rare$Observed))
 mac.rate <-  12/c(mac.est,mac.lci,mac.uci)
 
 
-pt.rare <- read.csv('../GitHub/GVP_Science/data/output/pteropus_estimates_by_viral_family.csv')
+pt.rare <- read.csv('~/Documents/GitHub/GVP_Science/data/output/pteropus_estimates_by_viral_family.csv')
 pt.rare <- pt.rare[pt.rare$Class=='DNA',]
 pt.total = 32
 pt.raw <- kevin[kevin$hHostNameFinal=='Pteropus_giganteus',]$vVirusNameCorrected
@@ -195,7 +195,7 @@ corrected.50.dna
 
 ### Derive the rates of sampling ###
 
-mac.rare <- read.csv('../GitHub/GVP_Science/data/output/macaca_estimates_by_viral_family.csv')
+mac.rare <- read.csv('~/Documents/GitHub/GVP_Science/data/output/macaca_estimates_by_viral_family.csv')
 mac.rare <- mac.rare[mac.rare$Class=='RNA',]
 mac.total = 161
 mac.raw <- kevin[kevin$hHostNameFinal=='Macaca_mulatta',]$vVirusNameCorrected
@@ -207,7 +207,7 @@ mac.uci <- sum(mac.rare$UCL) + (mac.total-sum(mac.rare$Observed))
 mac.rate <-  10/c(mac.est,mac.lci,mac.uci)
 
 
-pt.rare <- read.csv('../GitHub/GVP_Science/data/output/pteropus_estimates_by_viral_family.csv')
+pt.rare <- read.csv('~/Documents/GitHub/GVP_Science/data/output/pteropus_estimates_by_viral_family.csv')
 pt.rare <- pt.rare[pt.rare$Class=='RNA',]
 pt.total = 23
 pt.raw <- kevin[kevin$hHostNameFinal=='Pteropus_giganteus',]$vVirusNameCorrected
